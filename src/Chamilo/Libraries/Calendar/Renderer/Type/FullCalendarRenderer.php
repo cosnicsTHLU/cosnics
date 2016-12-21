@@ -61,7 +61,14 @@ class FullCalendarRenderer
         $html[] = '    		    		    		right: "month,agendaWeek,agendaDay,listWeek"';
         $html[] = '    		    		},';
         $html[] = '    		    		defaultDate: "' . date('Y-m-d', $this->getDisplayTime()) . '",';
-        $html[] = '    		    		navLinks: true,';
+        $html[] = '    		    		navLinks: true,
+                           height: "auto",
+                           firstDay: 1,
+        businessHours: {
+            dow: [ 1, 2, 3, 4, 5 ],
+            start: "10:00",
+            end: "18:00"
+        }';
         $html[] = '    		});';
 
         $html[] = '';
