@@ -3,6 +3,8 @@ namespace Chamilo\Libraries\Calendar\Renderer\Type;
 
 use Chamilo\Libraries\Format\Utilities\ResourceManager;
 use Chamilo\Libraries\File\PathBuilder;
+use Chamilo\Libraries\File\Redirect;
+use Chamilo\Libraries\Architecture\Application\Application;
 
 /**
  *
@@ -53,6 +55,11 @@ class FullCalendarRenderer
 
         $html[] = $this->getDependencies();
 
+        $ajaxUrl = new Redirect(
+            array(
+                Application::PARAM_CONTEXT => 'Ehb\Application\Calendar\Extension\SyllabusPlus\Ajax',
+                Application::PARAM_ACTION => 'FullCalendarEvents'));
+
         $html[] = '<script>';
         $html[] = '	$(document).ready(function() {';
         $html[] = '    		$(\'#calendar\').fullCalendar({';
@@ -64,101 +71,30 @@ class FullCalendarRenderer
         $html[] = '    		    		navLinks: true,
                            height: "auto",
                            firstDay: 1,
-        businessHours: {
-            dow: [ 1, 2, 3, 4, 5 ],
-            start: "10:00",
-            end: "18:00"
-        }';
+                           timeFormat: "hh:mm",
+                           businessHours: {
+                               dow: [ 1, 2, 3, 4, 5 ],
+                               start: "10:00",
+                               end: "18:00"
+                           },
+                           			events: {
+                               				url: '. json_encode($ajaxUrl->getUrl()) .',
+                               				error: function() {
+                               					    $("#script-warning").show();
+                               				}
+                           			},
+                           			loading: function(bool) {
+                               				$("#loading").toggle(bool);
+                           			}';
         $html[] = '    		});';
-
-        $html[] = '';
-        $html[] = '';
-        $html[] = '';
 
         $html[] = '	});';
         $html[] = '</script>';
 
         $html[] = '<div class="col-xs-12 col-lg-10 table-calendar-main">';
+        $html[] = '<div id="loading">Loading...</div>';
         $html[] = '<div id="calendar"></div>';
         $html[] = '</div>';
-
-        $test = <<<EOT
-<script>
-
-	$(document).ready(function() {
-
-		$('#calendar').fullCalendar({
-			header: {
-				left: 'prev,next today',
-				center: 'title',
-				right: 'month,agendaWeek,agendaDay,listWeek'
-			},
-			defaultDate: '2016-12-12',
-			navLinks: true, // can click day/week names to navigate views
-			editable: true,
-			eventLimit: true, // allow "more" link when too many events
-			events: [
-				{
-					title: 'All Day Event',
-					start: '2016-12-01'
-				},
-				{
-					title: 'Long Event',
-					start: '2016-12-07',
-					end: '2016-12-10'
-				},
-				{
-					id: 999,
-					title: 'Repeating Event',
-					start: '2016-12-09T16:00:00'
-				},
-				{
-					id: 999,
-					title: 'Repeating Event',
-					start: '2016-12-16T16:00:00'
-				},
-				{
-					title: 'Conference',
-					start: '2016-12-11',
-					end: '2016-12-13'
-				},
-				{
-					title: 'Meeting',
-					start: '2016-12-12T10:30:00',
-					end: '2016-12-12T12:30:00'
-				},
-				{
-					title: 'Lunch',
-					start: '2016-12-12T12:00:00'
-				},
-				{
-					title: 'Meeting',
-					start: '2016-12-12T14:30:00'
-				},
-				{
-					title: 'Happy Hour',
-					start: '2016-12-12T17:30:00'
-				},
-				{
-					title: 'Dinner',
-					start: '2016-12-12T20:00:00'
-				},
-				{
-					title: 'Birthday Party',
-					start: '2016-12-13T07:00:00'
-				},
-				{
-					title: 'Click for Google',
-					url: 'http://google.com/',
-					start: '2016-12-28'
-				}
-			]
-		});
-
-	});
-
-</script>
-EOT;
 
         return implode(PHP_EOL, $html);
     }
