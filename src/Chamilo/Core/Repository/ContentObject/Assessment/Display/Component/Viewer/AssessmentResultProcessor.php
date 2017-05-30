@@ -91,7 +91,7 @@ class AssessmentResultProcessor
                 $question_cloi->get_weight());
             $score = $score_calculator->calculate_score();
             
-            if ($this->assessment_viewer->get_configuration()->show_feedback_after_every_page())
+            if ($this->assessment_viewer->showFeedbackAfterEveryPage())
             {
                 $display = AssessmentQuestionResultDisplay::factory(
                     $this->get_assessment_viewer(), 
@@ -179,19 +179,19 @@ class AssessmentResultProcessor
         
         if ($this->get_assessment_viewer()->get_configuration()->show_score())
         {
-            $this->question_results[] = '<div class="question">';
-            $this->question_results[] = '<div class="title">';
-            $this->question_results[] = '<div class="text">';
-            $this->question_results[] = '<div class="bevel" style="float: left;">';
-            $this->question_results[] = Translation::get('TotalScore');
-            $this->question_results[] = '</div>';
-            $this->question_results[] = '<div class="bevel" style="text-align: right;">';
-            
+            $this->question_results[] = '<div class="panel panel-default">';
+
+            $this->question_results[] = '<div class="panel-heading">';
+            $this->question_results[] = '<h3 class="panel-title pull-left">' . Translation::get('TotalScore') . '</h3>';
+            $this->question_results[] = '<div class="pull-right">';
+
             $this->question_results[] = $total_score . ' / ' . $total_weight . ' (' . $percent . '%)';
+
             $this->question_results[] = '</div>';
-            
-            $this->question_results[] = '</div></div></div>';
-            $this->question_results[] = '<div class="clear"></div>';
+            $this->question_results[] = '<div class="clearfix"></div>';
+            $this->question_results[] = '</div>';
+            $this->question_results[] = '</div>';
+
         }
         
         $question_number = 1;

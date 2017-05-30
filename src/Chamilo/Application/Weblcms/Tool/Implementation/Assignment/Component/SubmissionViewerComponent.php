@@ -16,8 +16,11 @@ use Chamilo\Application\Weblcms\Tool\Implementation\CourseGroup\Storage\DataClas
 use Chamilo\Core\Group\Storage\DataClass\Group;
 use Chamilo\Core\Repository\Common\Rendition\ContentObjectRendition;
 use Chamilo\Core\Repository\Common\Rendition\ContentObjectRenditionImplementation;
+use Chamilo\Core\Repository\ContentObject\Assignment\Storage\DataClass\Assignment;
 use Chamilo\Core\Repository\ContentObject\Document\Document;
+use Chamilo\Libraries\Architecture\Exceptions\NoObjectSelectedException;
 use Chamilo\Libraries\Architecture\Exceptions\NotAllowedException;
+use Chamilo\Libraries\Architecture\Exceptions\ObjectNotExistException;
 use Chamilo\Libraries\Format\Structure\ActionBar\Button;
 use Chamilo\Libraries\Format\Structure\ActionBar\ButtonGroup;
 use Chamilo\Libraries\Format\Structure\ActionBar\ButtonToolBar;
@@ -197,7 +200,11 @@ class SubmissionViewerComponent extends SubmissionsManager
         
         // Submission
         $submissions = AssignmentSubmission::get_data(AssignmentSubmission::class_name(), null, $condition)->as_array();
-        $this->submission = $submissions[0]->get_content_object();
+
+        if($submissions[0])
+        {
+            $this->submission = $submissions[0]->get_content_object();
+        }
     }
 
     /**
@@ -226,16 +233,33 @@ class SubmissionViewerComponent extends SubmissionsManager
 
     /**
      * Returns a submission tracker of the submission currently being viewed.
-     * 
      * @return AssignmentSubmission The submission tracker
+     * @throws NoObjectSelectedException
+     * @throws \Chamilo\Libraries\Architecture\Exceptions\UserException
      */
     function get_submission_tracker()
     {
+        $submissionTranslation = Translation::getInstance()->getTranslation('Submission');
+
+        $submissionId = $this->getRequest()->get(self::PARAM_SUBMISSION);
+        if(empty($submissionId))
+        {
+            throw new NoObjectSelectedException($submissionTranslation);
+        }
+
+
         $condition = new EqualityCondition(
             new PropertyConditionVariable(AssignmentSubmission::class_name(), AssignmentSubmission::PROPERTY_ID), 
-            new StaticConditionVariable(Request::get(self::PARAM_SUBMISSION)));
+            new StaticConditionVariable($submissionId));
         
-        return DataManager::retrieve(AssignmentSubmission::class_name(), new DataClassRetrieveParameters($condition));
+        $submission = DataManager::retrieve(AssignmentSubmission::class_name(), new DataClassRetrieveParameters($condition));
+
+        if(!$submission instanceof AssignmentSubmission)
+        {
+            throw new ObjectNotExistException($submissionTranslation, $submissionId);
+        }
+
+        return $submission;
     }
 
     /**

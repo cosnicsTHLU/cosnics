@@ -16,6 +16,7 @@ use Chamilo\Libraries\Format\Utilities\ResourceManager;
 use Chamilo\Libraries\Platform\Translation;
 use Chamilo\Libraries\Platform\Session\Session;
 use Chamilo\Libraries\Platform\Session\Request;
+use Chamilo\Libraries\Utilities\Utilities;
 
 /**
  * $Id: assessment_multiple_choice_question_form.class.php $
@@ -28,6 +29,7 @@ class AssessmentMultipleChoiceQuestionForm extends ContentObjectForm
     protected function build_creation_form()
     {
         parent::build_creation_form($this->getDescriptionHtmlEditorOptions());
+
         $this->buildBasicQuestionForm();
     }
 
@@ -54,10 +56,10 @@ class AssessmentMultipleChoiceQuestionForm extends ContentObjectForm
         $this->add_options();
         
         $this->addElement(
-            'html', 
+            'html',
             ResourceManager::getInstance()->get_resource_html(
                 Path::getInstance()->getJavascriptPath(
-                    'Chamilo\Core\Repository\ContentObject\AssessmentMultipleChoiceQuestion', 
+                    'Chamilo\Core\Repository\ContentObject\AssessmentMultipleChoiceQuestion',
                     true) . 'AssessmentMultipleChoiceQuestion.js'));
     }
 
@@ -98,6 +100,7 @@ class AssessmentMultipleChoiceQuestionForm extends ContentObjectForm
                 }
                 
                 $defaults[AssessmentMultipleChoiceQuestionOption::PROPERTY_CORRECT] = 0;
+                $defaults[AssessmentMultipleChoiceQuestionOption::PROPERTY_SCORE][0] = 1;
             }
         }
         
@@ -322,13 +325,16 @@ class AssessmentMultipleChoiceQuestionForm extends ContentObjectForm
                 {
                     $removeClass = 'text-muted';
                 }
-                
-                $actionButtons[] = '<span data-option-id="' . $option_number .
-                     '" class="option-action option-feedback fa fa-comment text-primary"></span>';
-                $actionButtons[] = '<span data-option-id="' . $option_number .
-                     '" class="option-action option-score fa fa-percent text-primary"></span>';
-                $actionButtons[] = '<span data-option-id="' . $option_number .
-                     '" class="option-action option-remove fa fa-trash ' . $removeClass . '"></span>';
+
+                $translator = Translation::getInstance();
+
+                $actionButtons[] = '<span title="' . $translator->getTranslation('Feedback') . '" data-option-id="'
+                    . $option_number . '" class="option-action option-feedback fa fa-comment text-primary"></span>';
+                $actionButtons[] = '<span title="' . $translator->getTranslation('Score') . '" data-option-id="'
+                    . $option_number . '" class="option-action option-score fa fa-percent text-primary"></span>';
+                $actionButtons[] = '<span title="' .
+                    $translator->getTranslation('Delete', null, Utilities::COMMON_LIBRARIES) . '" data-option-id="'
+                    . $option_number . '" class="option-action option-remove fa fa-trash ' . $removeClass . '"></span>';
                 
                 $this->addElement('html', implode('<br />' . PHP_EOL, $actionButtons));
                 

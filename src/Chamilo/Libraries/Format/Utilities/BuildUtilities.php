@@ -17,44 +17,44 @@ class BuildUtilities
     {
         $resourceBundles = new ResourceBundles(PackageList::ROOT);
         $packageNamespaces = $resourceBundles->getPackageNamespaces();
-        
+
         $basePath = Path::getInstance()->getBasePath();
         $baseWebPath = realpath($basePath . '..') . DIRECTORY_SEPARATOR . 'web' . DIRECTORY_SEPARATOR;
-        
+
         // Copy the resources
         foreach ($packageNamespaces as $packageNamespace)
         {
             // Images
             $sourceResourceImagePath = Path::getInstance()->getResourcesPath($packageNamespace) . 'Images' .
-                 DIRECTORY_SEPARATOR;
+                DIRECTORY_SEPARATOR;
             $webResourceImagePath = str_replace($basePath, $baseWebPath, $sourceResourceImagePath);
             Filesystem::recurse_copy($sourceResourceImagePath, $webResourceImagePath, true);
-            
+
             // Css
             $sourceResourceImagePath = Path::getInstance()->getResourcesPath($packageNamespace) . 'Css' .
-                 DIRECTORY_SEPARATOR;
+                DIRECTORY_SEPARATOR;
             $webResourceImagePath = str_replace($basePath, $baseWebPath, $sourceResourceImagePath);
             Filesystem::recurse_copy($sourceResourceImagePath, $webResourceImagePath, true);
-            
+
             // Javascript
             $sourceResourceJavascriptPath = Path::getInstance()->getResourcesPath($packageNamespace) . 'Javascript' .
-                 DIRECTORY_SEPARATOR;
+                DIRECTORY_SEPARATOR;
             $webResourceJavascriptPath = str_replace($basePath, $baseWebPath, $sourceResourceJavascriptPath);
             Filesystem::recurse_copy($sourceResourceJavascriptPath, $webResourceJavascriptPath, true);
-            
+
             $event->getIO()->write('Processed resources for: ' . $packageNamespace);
         }
-        
+
         // Copy the file extensions
         $sourceResourceImagePath = Path::getInstance()->getResourcesPath('Chamilo\Configuration') . 'File' .
-             DIRECTORY_SEPARATOR;
+            DIRECTORY_SEPARATOR;
         $webResourceImagePath = str_replace($basePath, $baseWebPath, $sourceResourceImagePath);
         Filesystem::recurse_copy($sourceResourceImagePath, $webResourceImagePath, true);
         $event->getIO()->write('Processed file extension resources');
-        
+
         // Copy the error pages
         $sourceResourceImagePath = Path::getInstance()->getResourcesPath('Chamilo\Configuration') . 'ErrorPages' .
-             DIRECTORY_SEPARATOR;
+            DIRECTORY_SEPARATOR;
         $webResourceImagePath = str_replace($basePath, $baseWebPath, $sourceResourceImagePath);
         Filesystem::recurse_copy($sourceResourceImagePath, $webResourceImagePath, true);
         $event->getIO()->write('Processed error pages');

@@ -180,7 +180,7 @@ abstract class Manager extends Application
     {
         parent::__construct($applicationConfiguration);
 
-        if($this->getUser())
+        if($this->getUser() && $this->getRequest()->get(self::PARAM_ACTION) != self::ACTION_DOWNLOAD_DOCUMENT)
         {
             $this->checkAuthorization(Manager::context());
         }
@@ -740,6 +740,11 @@ abstract class Manager extends Application
         $html = array();
 
         $html[] = parent::render_header();
+
+        if($this->get_action() == self::ACTION_HTML_EDITOR_FILE)
+        {
+            return implode(PHP_EOL, $html);
+        }
 
         if (! $this->getWorkspace() instanceof PersonalWorkspace)
         {

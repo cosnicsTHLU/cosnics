@@ -5,6 +5,7 @@ use Chamilo\Core\Repository\ContentObject\Assessment\Display\Component\ResultVie
 use Chamilo\Core\Repository\ContentObject\Assessment\Display\Manager;
 use Chamilo\Core\Repository\Storage\DataClass\ComplexContentObjectItem;
 use Chamilo\Core\Repository\Storage\DataClass\ContentObject;
+use Chamilo\Libraries\Architecture\Exceptions\UserException;
 use Chamilo\Libraries\Architecture\Interfaces\DelegateComponent;
 use Chamilo\Libraries\Format\Form\FormValidator;
 use Chamilo\Libraries\Platform\Translation;
@@ -32,7 +33,7 @@ class ResultsViewerComponent extends Manager implements DelegateComponent
         
         if (count($question_cids) <= 0)
         {
-            throw new \Exception(Translation::get('ThisAssessmentHasNoAnswers'));
+            throw new UserException(Translation::get('ThisAssessmentHasNoAnswers'));
         }
         
         $condition = new InCondition(
@@ -120,28 +121,25 @@ class ResultsViewerComponent extends Manager implements DelegateComponent
         
         if ($this->get_configuration()->show_score())
         {
-            $html = array();
-            
-            $html[] = '<div class="question">';
-            $html[] = '<div class="title">';
-            $html[] = '<div class="text">';
-            $html[] = '<div class="bevel" style="float: left;">';
-            $html[] = Translation::get('TotalScore');
-            $html[] = '</div>';
-            $html[] = '<div class="bevel" style="text-align: right;">';
-            
+            $html[] = '<div class="panel panel-default">';
+
+            $html[] = '<div class="panel-heading">';
+            $html[] = '<h3 class="panel-title pull-left">' . Translation::get('TotalScore') . '</h3>';
+            $html[] = '<div class="pull-right">';
+
             if ($total_score < 0)
             {
                 $total_score = 0;
             }
-            
+
             $percent = round(($total_score / $total_weight) * 100);
-            
+
             $html[] = $total_score . ' / ' . $total_weight . ' (' . $percent . '%)';
+
             $html[] = '</div>';
-            
-            $html[] = '</div></div></div>';
-            $html[] = '<div class="clear"></div>';
+            $html[] = '<div class="clearfix"></div>';
+            $html[] = '</div>';
+            $html[] = '</div>';
             
             $form->addElement('html', implode(PHP_EOL, $html));
         }

@@ -235,7 +235,13 @@ class DataConnector extends \Chamilo\Core\Repository\External\DataConnector
         
         $pageNumber = ($offset / $count) + 1;
         // $pageToken = PageTokenGenerator :: getInstance()->getToken($count, $pageNumber);
-        
+
+        /** Limit to 50 (max allowed for youtube) */
+        if($max_result > 50)
+        {
+            $max_result = 50;
+        }
+
         $parameters = array('q' => $query, 'maxResults' => $max_result, 'order' => $order, 'type' => 'video',
             /*'pageToken' => $pageToken*/);
         
@@ -264,8 +270,16 @@ class DataConnector extends \Chamilo\Core\Repository\External\DataConnector
             $object->set_owner_name($videosResponse['modelData']['items'][0]['snippet']['channelTitle']);
             
             $iso_duration = $videosResponse['modelData']['items'][0]['contentDetails']['duration'];
-            $date_interval = new \DateInterval($iso_duration);
-            $object->set_duration($date_interval->format('%s'));
+
+            try
+            {
+                $date_interval = new \DateInterval($iso_duration);
+                $object->set_duration($date_interval->format('%s'));
+            }
+            catch(\Exception $ex)
+            {
+                $object->set_duration(0);
+            }
             
             if (count($response['snippet']['thumbnails']) > 0)
             {

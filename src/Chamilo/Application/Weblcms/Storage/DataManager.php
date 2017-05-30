@@ -671,7 +671,7 @@ class DataManager extends \Chamilo\Libraries\Storage\DataManager\DataManager
         $attributes->set_id($record[ContentObjectPublication::PROPERTY_ID]);
         $attributes->set_publisher_id($record[ContentObjectPublication::PROPERTY_PUBLISHER_ID]);
         $attributes->set_date($record[ContentObjectPublication::PROPERTY_PUBLICATION_DATE]);
-        $attributes->set_application(__NAMESPACE__);
+        $attributes->set_application('Chamilo\Application\Weblcms');
         
         $course = \Chamilo\Application\Weblcms\Course\Storage\DataManager::retrieve_by_id(
             \Chamilo\Application\Weblcms\Course\Storage\DataClass\Course::class_name(), 
@@ -2133,7 +2133,11 @@ class DataManager extends \Chamilo\Libraries\Storage\DataManager\DataManager
                     foreach ($entity_ids as $course_group_id)
                     {
                         $course_group = self::retrieve_by_id(CourseGroup::class_name(), $course_group_id);
-                        
+
+                        if(empty($course_group)) { //course group no longer exists
+                            continue;
+                        }
+
                         $course_group_users = CourseGroupDataManager::retrieve_course_group_user_ids(
                             $course_group->get_id());
                         

@@ -181,9 +181,6 @@ class Translation
     {
         $instance = self::getInstance();
 
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-        self::$calledClass = $backtrace[1]['class'];
-
         return $instance->getTranslation($variable, $parameters, $context, $isocode);
     }
 
@@ -206,6 +203,8 @@ class Translation
      */
     public function getTranslation($variable, $parameters = array(), $context = null, $isocode = null)
     {
+        $this->determineDefaultTranslationContext();
+
         $translation = $this->doTranslation($variable, $context, $isocode);
 
         if (empty($parameters))
@@ -290,5 +289,21 @@ class Translation
     private function loadCache($language)
     {
         $this->strings[$language] = $this->getTranslationCacheService()->getForIdentifier($language);
+    }
+
+    protected function determineDefaultTranslationContext()
+    {
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $counter = 1;
+
+        /** If called by deprecated method get, the actual class is deeper in the stack trace */
+        do
+        {
+            $class = $backtrace[$counter]['class'];
+            $counter++;
+        }
+        while($class == __CLASS__);
+
+        self::$calledClass = $class;
     }
 }

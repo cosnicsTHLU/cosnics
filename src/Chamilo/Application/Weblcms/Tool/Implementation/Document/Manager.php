@@ -5,6 +5,7 @@ use Chamilo\Application\Weblcms\Renderer\PublicationList\ContentObjectPublicatio
 use Chamilo\Application\Weblcms\Storage\DataClass\ContentObjectPublication;
 use Chamilo\Application\Weblcms\Tool\Interfaces\IntroductionTextSupportInterface;
 use Chamilo\Core\Repository\ContentObject\File\Storage\DataClass\File;
+use Chamilo\Core\Repository\ContentObject\Introduction\Storage\DataClass\Introduction;
 use Chamilo\Core\Repository\ContentObject\Matterhorn\Storage\DataClass\Matterhorn;
 use Chamilo\Core\Repository\ContentObject\Page\Storage\DataClass\Page;
 use Chamilo\Core\Repository\ContentObject\Webpage\Storage\DataClass\Webpage;
@@ -53,6 +54,18 @@ abstract class Manager extends \Chamilo\Application\Weblcms\Tool\Manager impleme
                 $allowed_types[] = $optional_type;
             }
         }
+
+        $hogentTypes = array(
+            'Hogent\Core\Repository\ContentObject\Video\Storage\DataClass\Video'
+        );
+
+        foreach ($hogentTypes as $hogentType)
+        {
+            if (class_exists($hogentType))
+            {
+                $allowed_types[] = $hogentType;
+            }
+        }
         
         return $allowed_types;
     }
@@ -72,8 +85,8 @@ abstract class Manager extends \Chamilo\Application\Weblcms\Tool\Manager impleme
         $class = $publication[ContentObject::PROPERTY_TYPE];
         $content_object = new $class($publication);
         $content_object->set_id($publication[ContentObjectPublication::PROPERTY_CONTENT_OBJECT_ID]);
-        
-        if (! $content_object instanceof Page)
+
+        if ($content_object instanceof File || $content_object instanceof Webpage)
         {
             $toolbar->add_item(
                 new ToolbarItem(
@@ -93,8 +106,8 @@ abstract class Manager extends \Chamilo\Application\Weblcms\Tool\Manager impleme
         $class = $publication[ContentObject::PROPERTY_TYPE];
         $content_object = new $class($publication);
         $content_object->set_id($publication[ContentObjectPublication::PROPERTY_CONTENT_OBJECT_ID]);
-        
-        if (! $content_object instanceof Page)
+
+        if ($content_object instanceof File || $content_object instanceof Webpage)
         {
             $buttonGroup->prependButton(
                 new Button(

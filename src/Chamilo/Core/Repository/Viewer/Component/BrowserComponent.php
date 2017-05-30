@@ -13,6 +13,7 @@ use Chamilo\Core\Repository\Workspace\Repository\WorkspaceRepository;
 use Chamilo\Core\Repository\Workspace\Service\RightsService;
 use Chamilo\Core\Repository\Workspace\Service\WorkspaceService;
 use Chamilo\Core\Repository\Workspace\Storage\DataClass\Workspace;
+use Chamilo\Libraries\Architecture\Exceptions\UserException;
 use Chamilo\Libraries\Architecture\Interfaces\ComplexContentObjectSupport;
 use Chamilo\Libraries\Format\Structure\ActionBar\ButtonToolBar;
 use Chamilo\Libraries\Format\Structure\ActionBar\DropdownButton;
@@ -148,9 +149,15 @@ class BrowserComponent extends Manager implements TableSupport
         {
             $types = $all_types;
         }
+
+        if(count($types) == 1)
+        {
+            $types = $types[0];
+        }
         
         $filterData->set_filter_property(FilterData::FILTER_TYPE, $types);
-        
+        $filterData->setExcludedContentObjectIds($this->get_excluded_objects());
+
         $this->filterData = $filterData;
     }
 
@@ -320,6 +327,7 @@ class BrowserComponent extends Manager implements TableSupport
                         array_merge(
                             $this->get_parameters(), 
                             array(
+                                self::PARAM_TAB => self::TAB_VIEWER,
                                 self::PARAM_ACTION => self::ACTION_VIEWER, 
                                 self::PARAM_VIEW_ID => $content_object->get_id())), 
                         false), 
@@ -337,6 +345,7 @@ class BrowserComponent extends Manager implements TableSupport
                         array_merge(
                             $this->get_parameters(), 
                             array(
+                                self::PARAM_TAB => self::TAB_CREATOR,
                                 self::PARAM_ACTION => self::ACTION_CREATOR, 
                                 self::PARAM_EDIT_ID => $content_object->get_id())), 
                         false), 
@@ -396,7 +405,7 @@ class BrowserComponent extends Manager implements TableSupport
                     
                     if (! $workspace)
                     {
-                        throw new \RuntimeException(
+                        throw new UserException(
                             Translation::getInstance()->getTranslation(
                                 'NoValidWorkspacesForUser', 
                                 null, 

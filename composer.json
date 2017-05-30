@@ -17,12 +17,14 @@
         "symfony/form" : "2.*",
         "symfony/twig-bridge": "2.*",
         "symfony/translation": "2.*",
+        "symfony/filesystem": "2.*",
         "twig/twig" : "1.*",
         "doctrine/dbal" : "2.5.4",
         "doctrine/cache" : "1.5.*",
         "chamilo/pear-libraries" : "*",
         "glenscott/soundcloud": "dev-psr-4",
-        "google/apiclient": "1.*"
+        "google/apiclient": "1.*",
+        "monolog/monolog": "1.*"
     },
     "require-dev" : {
         "phpunit/phpunit" : "4.4.*",

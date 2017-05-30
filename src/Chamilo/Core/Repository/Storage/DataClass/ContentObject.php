@@ -224,7 +224,14 @@ class ContentObject extends CompositeDataClass
 
     public function get_owner_fullname()
     {
-        return $this->get_owner()->get_fullname();
+        $owner = $this->get_owner();
+        
+        if($owner instanceof User)
+        {
+            return $owner->get_fullname();
+        }
+        
+        return Translation::getInstance()->getTranslation('UserUnknown', null, \Chamilo\Core\User\Manager::context());
     }
 
     /**
@@ -1512,7 +1519,7 @@ class ContentObject extends CompositeDataClass
      * change was made to the description of an included object, the security code in the including object wouldn't
      * match anymore unless replaced.
      * 
-     * @return type
+     * @return string
      */
     public function calculate_security_code()
     {
